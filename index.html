@@ -3,547 +3,548 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Absensi — XI TKJ 2</title>
+<title>Absensi SMKN 1 Kota Serang</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
 <style>
-  :root{
-    --bg: #0e1b22;
-    --panel: #12232c;
-    --panel-2: #16303b;
-    --line: #23434f;
-    --text: #dceef2;
-    --text-dim: #7fa1ac;
-    --accent: #4fd1c5;
-    --accent-dim: #1f4d49;
-    --hadir: #4fd1c5;
-    --izin: #e8b84b;
-    --sakit: #6c8ff8;
-    --alpa: #e2596b;
-  }
-  *{box-sizing:border-box;}
-  body{
+*{
+    box-sizing:border-box;
+}
+
+body{
     margin:0;
-    background:
-      linear-gradient(var(--bg), var(--bg)),
-      repeating-linear-gradient(0deg, rgba(79,209,197,0.035) 0px, rgba(79,209,197,0.035) 1px, transparent 1px, transparent 28px),
-      repeating-linear-gradient(90deg, rgba(79,209,197,0.035) 0px, rgba(79,209,197,0.035) 1px, transparent 1px, transparent 28px);
-    color:var(--text);
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    min-height:100vh;
-    padding-bottom:60px;
-  }
-  .topbar{
-    border-bottom:1px solid var(--line);
-    padding:22px 20px 18px;
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-  }
-  .topbar .tag{
-    font-family: 'Consolas', 'SFMono-Regular', Menlo, monospace;
-    font-size:12px;
-    color:var(--accent);
-    letter-spacing:0.04em;
-  }
-  .topbar h1{
+    font-family:Arial,sans-serif;
+    background:#f1f5f9;
+    color:#111827;
+}
+
+header{
+    background:#2563eb;
+    color:white;
+    text-align:center;
+    padding:22px 10px;
+}
+
+header h1{
     margin:0;
-    font-size:26px;
-    font-weight:700;
-    letter-spacing:-0.01em;
-  }
-  .topbar .sub{
-    color:var(--text-dim);
-    font-size:14px;
-  }
-  .wrap{
-    max-width:760px;
-    margin:0 auto;
-    padding:0 16px;
-  }
-  .controls{
-    display:flex;
-    gap:12px;
-    align-items:flex-end;
-    flex-wrap:wrap;
-    margin-top:22px;
-    padding:16px;
-    background:var(--panel);
-    border:1px solid var(--line);
+    font-size:23px;
+}
+
+header p{
+    margin:6px 0 0;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:15px;
+}
+
+.card{
+    background:white;
+    border-radius:15px;
+    padding:18px;
+    margin-bottom:18px;
+    box-shadow:0 3px 12px #0002;
+}
+
+h2{
+    margin-top:0;
+    color:#1d4ed8;
+}
+
+button{
+    border:0;
     border-radius:10px;
-  }
-  .field{ display:flex; flex-direction:column; gap:6px; }
-  .field label{ font-size:12px; color:var(--text-dim); }
-  .field input, .field select{
-    background:var(--panel-2);
-    border:1px solid var(--line);
-    color:var(--text);
-    padding:9px 10px;
-    border-radius:7px;
-    font-size:14px;
-  }
-  .field input:focus, .field select:focus{ outline:2px solid var(--accent); outline-offset:1px; }
-
-  .tabs{
-    display:flex;
-    gap:6px;
-    margin-top:18px;
-    border-bottom:1px solid var(--line);
-  }
-  .tab-btn{
-    background:none;
-    border:none;
-    color:var(--text-dim);
-    padding:10px 14px;
-    font-size:14px;
+    padding:12px 18px;
+    font-weight:bold;
     cursor:pointer;
-    border-bottom:2px solid transparent;
-  }
-  .tab-btn.active{
-    color:var(--text);
-    border-bottom:2px solid var(--accent);
-  }
+}
 
-  .view{ display:none; }
-  .view.active{ display:block; }
+.btn-scan{
+    background:#2563eb;
+    color:white;
+}
 
-  .bulk-row{
-    display:flex;
-    gap:8px;
-    margin:16px 0;
-    flex-wrap:wrap;
-  }
-  .bulk-row button{
-    background:var(--panel);
-    border:1px solid var(--line);
-    color:var(--text-dim);
-    padding:7px 12px;
-    border-radius:7px;
-    font-size:12.5px;
-    cursor:pointer;
-  }
-  .bulk-row button:hover{ border-color:var(--accent); color:var(--text); }
-
-  .student-list{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    margin-top:6px;
-  }
-  .row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:9px;
-    padding:11px 12px;
-  }
-  .row .who{
-    display:flex;
-    gap:10px;
-    align-items:baseline;
-    min-width:0;
-  }
-  .row .no{
-    font-family:'Consolas', Menlo, monospace;
-    font-size:12px;
-    color:var(--text-dim);
-    width:22px;
-    flex-shrink:0;
-  }
-  .row .name{
-    font-size:14.5px;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-  .status-group{
-    display:flex;
-    gap:4px;
-    flex-shrink:0;
-  }
-  .status-group button{
-    border:1px solid var(--line);
-    background:var(--panel-2);
-    color:var(--text-dim);
-    width:36px;
-    height:30px;
-    border-radius:6px;
-    font-size:12px;
-    font-weight:600;
-    cursor:pointer;
-  }
-  .status-group button[data-s="H"].on{ background:var(--hadir); color:#06211f; border-color:var(--hadir); }
-  .status-group button[data-s="S"].on{ background:var(--sakit); color:#0b1533; border-color:var(--sakit); }
-  .status-group button[data-s="I"].on{ background:var(--izin); color:#2b1e02; border-color:var(--izin); }
-  .status-group button[data-s="A"].on{ background:var(--alpa); color:#310a10; border-color:var(--alpa); }
-
-  .save-bar{
-    position:sticky;
-    bottom:0;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:12px 14px;
-    margin-top:16px;
-  }
-  .save-bar .count{ font-size:13px; color:var(--text-dim); }
-  .save-bar button{
-    background:var(--accent);
-    color:#06211f;
-    border:none;
-    font-weight:700;
-    padding:10px 18px;
-    border-radius:7px;
-    cursor:pointer;
-    font-size:14px;
-  }
-  .save-bar button:disabled{ opacity:0.5; cursor:default; }
-  .toast{
-    font-size:12.5px;
-    color:var(--accent);
-    min-height:16px;
-  }
-
-  .recap-toolbar{
-    display:flex;
-    gap:10px;
-    align-items:flex-end;
-    margin-top:16px;
-    flex-wrap:wrap;
-  }
-  table{ width:100%; border-collapse:collapse; margin-top:16px; font-size:13.5px; }
-  thead th{
-    text-align:left;
-    color:var(--text-dim);
-    font-weight:600;
-    font-size:12px;
-    padding:8px 8px;
-    border-bottom:1px solid var(--line);
-  }
-  tbody td{ padding:8px 8px; border-bottom:1px solid var(--line); }
-  tbody tr:hover{ background:var(--panel); }
-  .pill{
-    display:inline-block;
-    min-width:20px;
-    text-align:center;
-    padding:2px 6px;
-    border-radius:5px;
-    font-size:12px;
-    font-weight:700;
-  }
-  .pill.H{ background:var(--accent-dim); color:var(--hadir); }
-  .pill.S{ background:#1a2650; color:var(--sakit); }
-  .pill.I{ background:#3a2c07; color:var(--izin); }
-  .pill.A{ background:#3d1017; color:var(--alpa); }
-
-  .empty{
-    text-align:center;
-    color:var(--text-dim);
-    padding:30px 10px;
-    font-size:14px;
-  }
-  .loading{
-    text-align:center;
-    color:var(--text-dim);
-    padding:30px 10px;
-    font-size:13px;
-  }
-  .legend{
-    display:flex;
-    gap:14px;
-    flex-wrap:wrap;
-    font-size:12px;
-    color:var(--text-dim);
+.btn-hadir{
+    background:#16a34a;
+    color:white;
+    width:100%;
     margin-top:10px;
-  }
-  .legend span b{ color:var(--text); }
+}
+
+.btn-batal{
+    background:#dc2626;
+    color:white;
+    width:100%;
+    margin-top:8px;
+}
+
+#reader{
+    width:100%;
+    max-width:500px;
+    margin:auto;
+}
+
+#konfirmasi{
+    display:none;
+    border:2px solid #22c55e;
+    background:#f0fdf4;
+}
+
+.nama{
+    font-size:20px;
+    font-weight:bold;
+    margin:10px 0;
+}
+
+.select-tipe {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.status{
+    background:#16a34a;
+    color:white;
+    padding:12px;
+    border-radius:10px;
+    text-align:center;
+    font-weight:bold;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:9px;
+    text-align:left;
+}
+
+th{
+    background:#2563eb;
+    color:white;
+}
+
+.qr-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+.qr-card{
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:12px;
+    text-align:center;
+    background:#fff;
+}
+
+.qr{
+    display:flex;
+    justify-content:center;
+    margin:10px 0;
+}
+
+.nomor{
+    font-weight:bold;
+    color:#2563eb;
+}
+
+.nama-qr{
+    font-size:14px;
+    min-height:35px;
+}
+
+@media(max-width:500px){
+    table{
+        font-size:12px;
+    }
+}
 </style>
 </head>
+
 <body>
 
-<div class="topbar">
-  <div class="tag">SMK · XI TKJ 2</div>
-  <h1>Absensi Online</h1>
-  <div class="sub">Presensi harian kelas XI TKJ 2 — 36 siswa</div>
-</div>
+<header>
+    <h1>SMKN 1 KOTA SERANG</h1>
+    <p>ABSENSI ONLINE QR CODE</p>
+</header>
 
-<div class="wrap">
+<div class="container">
 
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="isi">Isi Absensi</button>
-    <button class="tab-btn" data-tab="rekap">Rekap</button>
-  </div>
+    <!-- SCANNER -->
+    <div class="card">
+        <h2>📷 Scan QR Siswa</h2>
 
-  <!-- ================= ISI ABSENSI ================= -->
-  <div class="view active" id="view-isi">
-    <div class="controls">
-      <div class="field">
-        <label for="tanggal">Tanggal</label>
-        <input type="date" id="tanggal">
-      </div>
-      <div class="field" style="flex:1; min-width:160px;">
-        <label>&nbsp;</label>
-        <div class="toast" id="loadStatus"></div>
-      </div>
+        <div id="reader"></div>
+
+        <p id="hasilScan">
+            Silakan arahkan kamera ke QR siswa.
+        </p>
     </div>
 
-    <div class="bulk-row">
-      <button data-bulk="H">Tandai semua Hadir</button>
-      <button data-bulk="clear">Kosongkan semua</button>
+    <!-- KONFIRMASI -->
+    <div class="card" id="konfirmasi">
+
+        <h2>⚙️ Pengaturan Absensi</h2>
+
+        <p>Nama Siswa:</p>
+        <div class="nama" id="namaScan">-</div>
+
+        <p>Tipe Presensi:</p>
+        <select id="tipeAbsen" class="select-tipe">
+            <option value="DATANG">🌅 Presensi Datang</option>
+            <option value="PULANG">🌆 Presensi Pulang</option>
+        </select>
+
+        <p>Status:</p>
+        <div class="status">
+            ✅ HADIR
+        </div>
+
+        <button class="btn-hadir" id="btnKonfirmasi" onclick="konfirmasiHadir()">
+            KONFIRMASI HADIR
+        </button>
+
+        <button class="btn-batal" onclick="batalScan()">
+            BATAL
+        </button>
     </div>
 
-    <div class="legend">
-      <span><b>H</b> Hadir</span>
-      <span><b>S</b> Sakit</span>
-      <span><b>I</b> Izin</span>
-      <span><b>A</b> Alpa</span>
+    <!-- DAFTAR ABSEN -->
+    <div class="card">
+        <h2>📋 Daftar Absensi</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Tipe</th>
+                    <th>Status</th>
+                    <th>Waktu</th>
+                </tr>
+            </thead>
+
+            <tbody id="tabelAbsen"></tbody>
+        </table>
     </div>
 
-    <div class="student-list" id="studentList"></div>
+    <!-- QR SISWA -->
+    <div class="card">
+        <h2>🎫 QR Code Siswa</h2>
+        <p>Setiap siswa mempunyai QR Code sendiri.</p>
 
-    <div class="save-bar">
-      <div class="count" id="fillCount">0 / 36 terisi</div>
-      <div style="display:flex; align-items:center; gap:10px;">
-        <span class="toast" id="saveToast"></span>
-        <button id="saveBtn">Simpan Absensi</button>
-      </div>
+        <div class="qr-grid" id="qrGrid"></div>
     </div>
-  </div>
-
-  <!-- ================= REKAP ================= -->
-  <div class="view" id="view-rekap">
-    <div class="recap-toolbar">
-      <div class="field">
-        <label for="rekapTanggal">Lihat tanggal</label>
-        <select id="rekapTanggal"></select>
-      </div>
-    </div>
-    <div id="rekapArea"><div class="loading">Memuat data…</div></div>
-  </div>
 
 </div>
 
 <script>
-const STUDENTS = [
-"ABDAN KAUTSAR NUGRAHA","ARSAVA KEYLA CAPRICONITA","AYATU SIFANA RAMADANI",
-"BINTANG AFIYA RACHMA","CHANTIKA PUTRI AULIA LUBIS","DHEA PUTRI RAMADANI",
-"DZAKWAN RAMADANI","EKA SAPUTRA","FARAS NUGRAHA","FEBRI RAHMADANI",
-"LINGGA FAULINA","M. PUTRA ALIFIAN","MIFTAKHUL ULUM","MOCHAMAD ARAMERU QESHA",
-"MOZHA SEREN ALVIONA","MUHAMAD ADAM MAULANA","MUHAMAD IKHSAN HIBATULLOH",
-"MUHAMAD SURYA ABDULLAH","MUHAMMAD IHSAN FAWAZ","MUHAMMAD AZZAMY SYAUQI",
-"MUHAMMAD DARUL FARH","MUHAMMAD FAIRUZZ TAMIRULLAH","MUHAMMAD FATHAN AL'ATQA",
-"MUHAMMAD RAYSHA RAMADHANI","NASYA ABIEZA CHOIR","NAZAR ARDIANSYAH",
-"PRISCO STEVEN SIBURIAN","PUTRANTO ADI NUGROHO","RANGGA HIDAYATULLAH",
-"RIDHO RACHMAN","RIFKI AKBAR DARMANTO","RIZKI FATHAN MAULIDAN","ROBI SUJANA",
-"SULTAN","YUSUF ASTHA FAIRUS","ZIFARA KAYLA PUTRI"
+
+const FORMSPREE_URL = "https://formspree.io/f/myezkbvp";
+
+const siswa = [
+"ABDAN KAUTSAR NUGRAHA",
+"ARSAVA KEYLA CAPRICONITA",
+"AYATU SIFANA RAMADANI",
+"BINTANG AFIYA RACHMA",
+"CHANTIKA PUTRI AULIA LUBIS",
+"DHEA PUTRI RAMADANI",
+"DZAKWAN RAMADANI",
+"EKA SAPUTRA",
+"FARAS NUGRAHA",
+"FEBRI RAHMADANI",
+"LINGGA FAULINA",
+"M. PUTRA ALIFIAN",
+"MIFTAKHUL ULUM",
+"MOCHAMAD ARAMERU QESHA",
+"MOZHA SEREN ALVIONA",
+"MUHAMAD ADAM MAULANA",
+"MUHAMAD IKHSAN HIBATULLOH",
+"MUHAMAD SURYA ABDULLAH",
+"MUHAMMAD IHSAN FAWAZ",
+"MUHAMMAD AZZAMY SYAUQI",
+"MUHAMMAD DARUL FARH",
+"MUHAMMAD FAIRUZZ TAMIRULLAH",
+"MUHAMMAD FATHAN AL'ATQA",
+"MUHAMMAD RAYSHA RAMADHANI",
+"NASYA ABIEZA CHOIR",
+"NAZAR ARDIANSYAH",
+"PRISCO STEVEN SIBURIAN",
+"PUTRANTO ADI NUGROHO",
+"RANGGA HIDAYATULLAH",
+"RIDHO RACHMAN",
+"RIFKI AKBAR DARMANTO",
+"RIZKI FATHAN MAULIDAN",
+"ROBI SUJANA",
+"SULTAN",
+"YUSUF ASTHA FAIRUS",
+"ZIFARA KAYLA PUTRI"
 ];
 
-const STATUS_LABEL = {H:"Hadir", S:"Sakit", I:"Izin", A:"Alpa"};
-let currentData = {}; // {studentIndex: "H"/"S"/"I"/"A"}
-let savedDatesCache = [];
+let siswaTerpilih = null;
 
-function todayStr(){
-  const d = new Date();
-  const off = d.getTimezoneOffset();
-  const local = new Date(d.getTime() - off*60000);
-  return local.toISOString().slice(0,10);
-}
+/* =========================
+   BUAT QR 36 SISWA
+========================= */
 
-// ---------- storage helpers ----------
-async function getDatesList(){
-  try{
-    const res = await window.storage.get('dates-list', true);
-    return res ? JSON.parse(res.value) : [];
-  }catch(e){ return []; }
-}
-async function saveDatesList(list){
-  await window.storage.set('dates-list', JSON.stringify(list), true);
-}
-async function getAttendance(date){
-  try{
-    const res = await window.storage.get('absensi:' + date, true);
-    return res ? JSON.parse(res.value) : {};
-  }catch(e){ return {}; }
-}
-async function saveAttendance(date, data){
-  await window.storage.set('absensi:' + date, JSON.stringify(data), true);
-  const list = await getDatesList();
-  if(!list.includes(date)){
-    list.push(date);
-    list.sort();
-    await saveDatesList(list);
-  }
-}
+const qrGrid = document.getElementById("qrGrid");
 
-// ---------- ISI ABSENSI VIEW ----------
-function renderStudentList(){
-  const list = document.getElementById('studentList');
-  list.innerHTML = '';
-  STUDENTS.forEach((name, i) => {
-    const row = document.createElement('div');
-    row.className = 'row';
-    row.innerHTML = `
-      <div class="who">
-        <span class="no">${i+1}.</span>
-        <span class="name">${name}</span>
-      </div>
-      <div class="status-group" data-idx="${i}">
-        ${['H','S','I','A'].map(s => `<button data-s="${s}">${s}</button>`).join('')}
-      </div>`;
-    list.appendChild(row);
-  });
-  list.querySelectorAll('.status-group').forEach(group => {
-    group.addEventListener('click', e => {
-      const btn = e.target.closest('button');
-      if(!btn) return;
-      const idx = group.getAttribute('data-idx');
-      const s = btn.getAttribute('data-s');
-      if(currentData[idx] === s){
-        delete currentData[idx];
-      } else {
-        currentData[idx] = s;
-      }
-      reflectStatuses();
-      updateFillCount();
+siswa.forEach((nama,index)=>{
+
+    const id = "ABSEN-" + String(index+1).padStart(2,"0");
+
+    const card = document.createElement("div");
+    card.className = "qr-card";
+
+    card.innerHTML = `
+        <div class="nomor">QR ${index+1}</div>
+        <div class="nama-qr">${nama}</div>
+        <div class="qr" id="qr-${index+1}"></div>
+    `;
+
+    qrGrid.appendChild(card);
+
+    new QRCode(document.getElementById(`qr-${index+1}`),{
+        text:id,
+        width:140,
+        height:140
     });
-  });
-}
 
-function reflectStatuses(){
-  document.querySelectorAll('.status-group').forEach(group => {
-    const idx = group.getAttribute('data-idx');
-    group.querySelectorAll('button').forEach(btn => {
-      btn.classList.toggle('on', currentData[idx] === btn.getAttribute('data-s'));
-    });
-  });
-}
-
-function updateFillCount(){
-  const n = Object.keys(currentData).length;
-  document.getElementById('fillCount').textContent = `${n} / ${STUDENTS.length} terisi`;
-}
-
-async function loadDateIntoForm(date){
-  document.getElementById('loadStatus').textContent = 'Memuat…';
-  currentData = await getAttendance(date);
-  reflectStatuses();
-  updateFillCount();
-  document.getElementById('loadStatus').textContent = Object.keys(currentData).length
-    ? 'Data tersimpan untuk tanggal ini dimuat.'
-    : 'Belum ada data untuk tanggal ini.';
-}
-
-document.getElementById('tanggal').addEventListener('change', e => {
-  loadDateIntoForm(e.target.value);
 });
 
-document.querySelectorAll('.bulk-row button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const bulk = btn.getAttribute('data-bulk');
-    STUDENTS.forEach((_, i) => {
-      if(bulk === 'clear') delete currentData[i];
-      else currentData[i] = bulk;
-    });
-    reflectStatuses();
-    updateFillCount();
-  });
-});
 
-document.getElementById('saveBtn').addEventListener('click', async () => {
-  const date = document.getElementById('tanggal').value;
-  const btn = document.getElementById('saveBtn');
-  const toast = document.getElementById('saveToast');
-  btn.disabled = true;
-  toast.textContent = 'Menyimpan…';
-  try{
-    await saveAttendance(date, currentData);
-    toast.textContent = 'Tersimpan.';
-    await refreshRekapDates();
-  }catch(e){
-    toast.textContent = 'Gagal menyimpan, coba lagi.';
-  }
-  btn.disabled = false;
-  setTimeout(() => { toast.textContent = ''; }, 2500);
-});
+/* =========================
+   SCANNER
+========================= */
 
-// ---------- REKAP VIEW ----------
-async function refreshRekapDates(){
-  savedDatesCache = await getDatesList();
-  const sel = document.getElementById('rekapTanggal');
-  const prev = sel.value;
-  sel.innerHTML = '';
-  if(savedDatesCache.length === 0){
-    sel.innerHTML = '<option value="">Belum ada data</option>';
-    return;
-  }
-  savedDatesCache.slice().reverse().forEach(d => {
-    const opt = document.createElement('option');
-    opt.value = d;
-    opt.textContent = d;
-    sel.appendChild(opt);
-  });
-  sel.value = savedDatesCache.includes(prev) ? prev : savedDatesCache[savedDatesCache.length-1];
-}
+function hasilScan(decodedText){
 
-async function renderRekap(){
-  const area = document.getElementById('rekapArea');
-  const date = document.getElementById('rekapTanggal').value;
-  if(!date){
-    area.innerHTML = '<div class="empty">Belum ada absensi yang disimpan.</div>';
-    return;
-  }
-  area.innerHTML = '<div class="loading">Memuat data…</div>';
-  const data = await getAttendance(date);
-  const counts = {H:0,S:0,I:0,A:0};
-  STUDENTS.forEach((_, i) => { if(data[i]) counts[data[i]]++; });
+    const cocok = decodedText.match(/^ABSEN-(\d+)$/);
 
-  let html = `<div class="legend">
-    <span><b>${counts.H}</b> Hadir</span>
-    <span><b>${counts.S}</b> Sakit</span>
-    <span><b>${counts.I}</b> Izin</span>
-    <span><b>${counts.A}</b> Alpa</span>
-    <span><b>${STUDENTS.length - Object.keys(data).length}</b> Belum diisi</span>
-  </div>`;
-  html += `<table><thead><tr><th>No</th><th>Nama</th><th>Status</th></tr></thead><tbody>`;
-  STUDENTS.forEach((name, i) => {
-    const s = data[i];
-    const pill = s ? `<span class="pill ${s}">${s}</span> ${STATUS_LABEL[s]}` : '<span style="color:var(--text-dim)">—</span>';
-    html += `<tr><td>${i+1}</td><td>${name}</td><td>${pill}</td></tr>`;
-  });
-  html += `</tbody></table>`;
-  area.innerHTML = html;
-}
-
-document.getElementById('rekapTanggal').addEventListener('change', renderRekap);
-
-// ---------- TABS ----------
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', async () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const tab = btn.getAttribute('data-tab');
-    document.getElementById('view-isi').classList.toggle('active', tab === 'isi');
-    document.getElementById('view-rekap').classList.toggle('active', tab === 'rekap');
-    if(tab === 'rekap'){
-      await refreshRekapDates();
-      await renderRekap();
+    if(!cocok){
+        document.getElementById("hasilScan").innerHTML =
+        "❌ QR tidak dikenali.";
+        return;
     }
-  });
+
+    const nomor = parseInt(cocok[1]);
+
+    if(nomor < 1 || nomor > siswa.length){
+        return;
+    }
+
+    siswaTerpilih = nomor - 1;
+
+    const nama = siswa[siswaTerpilih];
+
+    document.getElementById("namaScan").textContent = nama;
+
+    document.getElementById("konfirmasi").style.display = "block";
+
+    document.getElementById("hasilScan").innerHTML =
+        "✅ QR berhasil dipindai!";
+
+    // hentikan kamera setelah berhasil scan
+    if(window.scanner){
+        window.scanner.clear();
+    }
+
+}
+
+
+/* =========================
+   MULAI SCANNER
+========================= */
+
+window.scanner = new Html5Qrcode("reader");
+
+window.scanner.start(
+    { facingMode:"environment" },
+    {
+        fps:10,
+        qrbox:{
+            width:250,
+            height:250
+        }
+    },
+    hasilScan,
+    function(error){
+        // abaikan error scan biasa
+    }
+).catch(function(error){
+
+    document.getElementById("hasilScan").innerHTML =
+    "❌ Kamera tidak bisa dibuka. Izinkan akses kamera dan gunakan HTTPS.";
+
 });
 
-// ---------- INIT ----------
-(async function init(){
-  renderStudentList();
-  const t = todayStr();
-  document.getElementById('tanggal').value = t;
-  await loadDateIntoForm(t);
-  await refreshRekapDates();
-})();
+
+/* =========================
+   KONFIRMASI HADIR
+========================= */
+
+async function konfirmasiHadir(){
+
+    if(siswaTerpilih === null){
+        return;
+    }
+
+    const btnHadir = document.getElementById("btnKonfirmasi");
+    btnHadir.disabled = true;
+    btnHadir.innerText = "MENGIRIM...";
+
+    const nama = siswa[siswaTerpilih];
+    const tipeAbsen = document.getElementById("tipeAbsen").value;
+
+    const sekarang = new Date();
+
+    const waktu =
+        sekarang.toLocaleDateString("id-ID") +
+        " " +
+        sekarang.toLocaleTimeString("id-ID");
+
+    let data =
+        JSON.parse(localStorage.getItem("absensiSMKN1")) || [];
+
+    // cek apakah sudah absen dengan jenis yang sama hari ini
+    const hariIni = sekarang.toLocaleDateString("id-ID");
+
+    const sudah = data.some(item =>
+        item.nama === nama &&
+        item.tipe === tipeAbsen &&
+        item.waktu.startsWith(hariIni)
+    );
+
+    if(sudah){
+        alert("⚠️ " + nama + " sudah melakukan presensi " + tipeAbsen + " hari ini!");
+        btnHadir.disabled = false;
+        btnHadir.innerText = "KONFIRMASI HADIR";
+        batalScan();
+        return;
+    }
+
+    // Kirim data ke Formspree
+    try {
+        await fetch(FORMSPREE_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                Nama: nama,
+                Tipe_Presensi: tipeAbsen,
+                Status: "HADIR",
+                Waktu: waktu
+            })
+        });
+    } catch (err) {
+        console.error("Gagal mengirkan data ke Formspree:", err);
+    }
+
+    // Simpan ke localStorage
+    data.push({
+        nama:nama,
+        tipe:tipeAbsen,
+        status:"HADIR",
+        waktu:waktu
+    });
+
+    localStorage.setItem(
+        "absensiSMKN1",
+        JSON.stringify(data)
+    );
+
+    tampilkanAbsen();
+
+    alert("✅ " + nama + " berhasil absen " + tipeAbsen + " dan terkirim ke server!");
+
+    btnHadir.disabled = false;
+    btnHadir.innerText = "KONFIRMASI HADIR";
+    batalScan();
+}
+
+
+/* =========================
+   BATAL
+========================= */
+
+function batalScan(){
+
+    siswaTerpilih = null;
+
+    document.getElementById("konfirmasi").style.display = "none";
+
+    document.getElementById("namaScan").textContent = "-";
+
+    document.getElementById("hasilScan").textContent =
+        "Silakan scan QR siswa.";
+
+    // mulai kamera lagi
+    window.scanner = new Html5Qrcode("reader");
+
+    window.scanner.start(
+        {facingMode:"environment"},
+        {
+            fps:10,
+            qrbox:{
+                width:250,
+                height:250
+            }
+        },
+        hasilScan,
+        function(error){}
+    ).catch(function(){});
+
+}
+
+
+/* =========================
+   TAMPILKAN DATA ABSEN
+========================= */
+
+function tampilkanAbsen(){
+
+    const tbody = document.getElementById("tabelAbsen");
+
+    tbody.innerHTML = "";
+
+    const data =
+        JSON.parse(localStorage.getItem("absensiSMKN1")) || [];
+
+    data.forEach((item,index)=>{
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${index+1}</td>
+            <td>${item.nama}</td>
+            <td><b>${item.tipe || "DATANG"}</b></td>
+            <td>✅ ${item.status}</td>
+            <td>${item.waktu}</td>
+        `;
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+tampilkanAbsen();
+
 </script>
 
 </body>
